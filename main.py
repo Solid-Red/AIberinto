@@ -189,7 +189,7 @@ class Game:
         pygame.draw.line(self.screen, COLOR_UI_GOLD, (0, hud_height), (self.width, hud_height), 2)
         
         # Textos del HUD
-        level_str = f"PISO: {self.current_level:02d}"
+        level_str = "PRUEBA COGNITIVA"
         steps_str = f"PASOS: {self.steps:03d} | RETOS: {len(self.player_history):01d}/{len(self.player_history) + len(self.story_rooms):01d}"
         
         minutes = int(self.elapsed_time) // 60
@@ -262,8 +262,8 @@ class Game:
                     (c, r) != self.maze.exit_pos):
                     walkable_cells.append((c, r))
                     
-        # Colocar exactamente 4 o 5 cámaras de retos según disponibilidad
-        num_challenges = min(5, len(walkable_cells))
+        # Colocar exactamente 8 cámaras de retos según disponibilidad (una para cada inteligencia múltiple)
+        num_challenges = min(8, len(walkable_cells))
         self.story_rooms = random.sample(walkable_cells, num_challenges)
         self.current_room = None
         

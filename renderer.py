@@ -47,14 +47,14 @@ class Renderer:
         self.use_assets = False
         try:
             if os.path.exists(tiles_dir):
-                self.tile_wall = self.load_and_scale(tiles_dir, "tile_0014.png", make_transparent=True)
-                self.tile_stone = self.load_and_scale(tiles_dir, "tile_0030.png", make_transparent=False)
-                self.tile_dirt = self.load_and_scale(tiles_dir, "tile_0049.png", make_transparent=False)
-                self.tile_player = self.load_and_scale(tiles_dir, "tile_0097.png", make_transparent=True)
-                self.tile_enemy = self.load_and_scale(tiles_dir, "tile_0108.png", make_transparent=True)
-                self.tile_chest_closed = self.load_and_scale(tiles_dir, "tile_0089.png", make_transparent=True)
-                self.tile_chest_open = self.load_and_scale(tiles_dir, "tile_0092.png", make_transparent=True)
-                self.tile_rune = self.load_and_scale(tiles_dir, "tile_0032.png", make_transparent=True)
+                self.tile_wall = self.load_and_scale(tiles_dir, "wall.png", make_transparent=False)
+                self.tile_stone = self.load_and_scale(tiles_dir, "floor_mushrom.png", make_transparent=False)
+                self.tile_dirt = self.load_and_scale(tiles_dir, "dirt.png", make_transparent=False)
+                self.tile_player = self.load_and_scale(tiles_dir, "knight.png", make_transparent=True)
+                self.tile_enemy = self.load_and_scale(tiles_dir, "stalker.png", make_transparent=True)
+                self.tile_chest_closed = self.load_and_scale(tiles_dir, "chest.png", make_transparent=True)
+                self.tile_chest_open = self.load_and_scale(tiles_dir, "open chest.png", make_transparent=True)
+                self.tile_rune = self.load_and_scale(tiles_dir, "key.png", make_transparent=True)
                 self.use_assets = True
                 print("Kenney 1-Bit assets loaded successfully with transparency.")
         except Exception as e:
