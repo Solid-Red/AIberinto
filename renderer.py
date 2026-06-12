@@ -178,12 +178,24 @@ class Renderer:
         # Limpiar fondo
         surface.fill(COLOR_BG)
         
-        # Calcular cámara 2D centrada en el caballero
+        # Calcular cámara 2D centrada con soporte para centrado y límites
         player_x = player.current_col * TILE_SIZE + TILE_SIZE // 2
         player_y = player.current_row * TILE_SIZE + TILE_SIZE // 2
         
-        offset_x = self.width // 2 - player_x
-        offset_y = self.height // 2 - player_y
+        maze_pixel_width = maze.width * TILE_SIZE
+        maze_pixel_height = maze.height * TILE_SIZE
+        
+        if maze_pixel_width < self.width:
+            offset_x = (self.width - maze_pixel_width) // 2
+        else:
+            offset_x = self.width // 2 - player_x
+            offset_x = max(self.width - maze_pixel_width, min(0, offset_x))
+            
+        if maze_pixel_height < self.height:
+            offset_y = (self.height - maze_pixel_height) // 2
+        else:
+            offset_y = self.height // 2 - player_y
+            offset_y = max(self.height - maze_pixel_height, min(0, offset_y))
         
         # Pase 1: Dibujar Suelos
         for row in range(maze.height):

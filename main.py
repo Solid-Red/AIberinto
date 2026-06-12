@@ -439,6 +439,28 @@ class Game:
             fallback_pos = self.maze.start_pos if (self.player.col, self.player.row) != self.maze.start_pos else self.maze.exit_pos
             self.enemy.reset(fallback_pos[0], fallback_pos[1])
 
+    def get_camera_offset(self):
+        """Calcula el desplazamiento de la cámara para centrar el laberinto/jugador."""
+        player_x = self.player.current_col * TILE_SIZE + TILE_SIZE // 2
+        player_y = self.player.current_row * TILE_SIZE + TILE_SIZE // 2
+        
+        maze_pixel_width = self.maze.width * TILE_SIZE
+        maze_pixel_height = self.maze.height * TILE_SIZE
+        
+        if maze_pixel_width < self.width:
+            offset_x = (self.width - maze_pixel_width) // 2
+        else:
+            offset_x = self.width // 2 - player_x
+            offset_x = max(self.width - maze_pixel_width, min(0, offset_x))
+            
+        if maze_pixel_height < self.height:
+            offset_y = (self.height - maze_pixel_height) // 2
+        else:
+            offset_y = self.height // 2 - player_y
+            offset_y = max(self.height - maze_pixel_height, min(0, offset_y))
+            
+        return offset_x, offset_y
+
     def handle_input(self):
         if self.state == STATE_PLAYING:
             keys = pygame.key.get_pressed()
@@ -583,13 +605,14 @@ class Game:
                                     self.enemy_message_timer = 4.0
                                     self.respawn_enemy_away()
                                     self.particle_system.emit_burst(self.width // 2, self.height // 2, COLOR_SHIELD_GOLD, count=50)
+                                    self.enemy_grace_steps = 30
                                 else:
                                     self.player.reset(self.maze.start_pos[0], self.maze.start_pos[1])
                                     self.enemy_message = "¡FALLASTE! El Acechante te destierra al inicio del laberinto."
                                     self.enemy_message_timer = 4.0
                                     self.respawn_enemy_away()
                                     self.particle_system.emit_burst(self.width // 2, self.height // 2, COLOR_UI_RED, count=50)
-                                    self.enemy_grace_steps = 15
+                                    self.enemy_grace_steps = 40
                                     
                                 self.state = STATE_PLAYING
                                 self.start_time = time.time() - self.elapsed_time
@@ -609,8 +632,9 @@ class Game:
                     self.enemy_message_timer -= 1.0 / FPS
                 
                 # Posición cenital en pantalla del caballero
-                screen_px = self.width // 2
-                screen_py = self.height // 2 - int(self.player.bob_offset)
+                offset_x, offset_y = self.get_camera_offset()
+                screen_px = self.player.current_col * TILE_SIZE + offset_x + TILE_SIZE // 2
+                screen_py = self.player.current_row * TILE_SIZE + offset_y + TILE_SIZE // 2 - int(self.player.bob_offset)
                 
                 # Partículas de antorcha
                 if self.player.is_moving():
@@ -640,8 +664,7 @@ class Game:
                         if len(self.story_rooms) == 0:
                             ex = self.maze.exit_pos[0] * TILE_SIZE + TILE_SIZE // 2
                             ey = self.maze.exit_pos[1] * TILE_SIZE + TILE_SIZE // 2
-                            offset_x = self.width // 2 - (self.player.current_col * TILE_SIZE + TILE_SIZE // 2)
-                            offset_y = self.height // 2 - (self.player.current_row * TILE_SIZE + TILE_SIZE // 2)
+                            offset_x, offset_y = self.get_camera_offset()
                             
                             self.particle_system.emit_burst(ex + offset_x, ey + offset_y, COLOR_SHIELD_GOLD, count=60)
                             self.trigger_mbti_report()
