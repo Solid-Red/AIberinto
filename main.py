@@ -22,6 +22,16 @@ from ai_client import AIClient
 class Game:
     def __init__(self):
         pygame.init()
+        
+        # Inicialización de audio
+        self.music_enabled = True
+        try:
+            pygame.mixer.init()
+        except Exception as e:
+            print(f"Advertencia: No se pudo inicializar el mezclador de audio: {e}")
+            self.music_enabled = False
+        self.current_track = None
+        
         # Permitir redimensionar ventana
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
         pygame.display.set_caption("Mazmorra de Inteligencias Múltiples con IA")
@@ -89,6 +99,30 @@ class Game:
         self.font_subtitle = pygame.font.SysFont(font_names, 28, bold=True)
         self.font_ui = pygame.font.SysFont(font_names, 20, bold=False)
         self.font_hud = pygame.font.SysFont(font_names, 22, bold=True)
+
+    def update_music(self):
+        """Asegura que suena la música correcta según el estado actual."""
+        if not self.music_enabled:
+            return
+            
+        # Determinar el archivo de música según el estado del juego
+        if self.state in (STATE_PLAYING, STATE_PAUSE):
+            target_track = "mapWalkingFF4.mp3"
+        elif self.state == STATE_STORY:
+            target_track = "questDesafio.mp3"
+        elif self.state == STATE_ENEMY_QUIZ:
+            target_track = "bossGosht.mp3"
+        else: # STATE_MENU, STATE_RESULTS
+            target_track = "intro.mp3"
+            
+        if self.current_track != target_track:
+            self.current_track = target_track
+            try:
+                # Cargar y reproducir en loop
+                pygame.mixer.music.load(f"music/{target_track}")
+                pygame.mixer.music.play(-1)
+            except Exception as e:
+                print(f"Error cargando o reproduciendo música {target_track}: {e}")
 
     def handle_resize(self, width, height):
         """Maneja el cambio de tamaño de la ventana."""
@@ -488,6 +522,9 @@ class Game:
         running = True
         while running:
             self.clock.tick(FPS)
+            
+            # Actualizar música de fondo según el estado
+            self.update_music()
             
             # --- MANEJO DE EVENTOS ---
             for event in pygame.event.get():
